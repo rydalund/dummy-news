@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Grommet, Box, Button } from "grommet";
 import { Sun, Moon } from "grommet-icons";
 import { customLightTheme, customDarkTheme } from "./components/theme";
+import WelcomeScreen from "./pages/WelcomeScreen";
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
 
  return (
    <Grommet theme={themeMode === "light" ? customLightTheme : customDarkTheme} full>
+     <WelcomeScreen />
      <Box pad="medium" align="center" background="background">
         <Button
           label={themeMode === "light" ? "Dark mode" : "Light mode"}
