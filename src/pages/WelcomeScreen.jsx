@@ -3,23 +3,25 @@ import HeroVideo from "../components/HeroVideo";
 
 const WelcomeScreen = () => {
   return (
-    <Box height="100vh" width="100vw" overflow="hidden" position="relative">
+    <div style={{ position: "relative", height: "70vh", width: "100%", overflow: "hidden" }}>
       <HeroVideo />
 
       <div
         style={{
           position: "absolute",
-          top: "20%",
+          top: "5%",
           left: "50%",
           transform: "translateX(-50%)",
-          zIndex: 1,
+          color: "white",
           textAlign: "center",
+          zIndex: 1,
+          pointerEvents: "none",
         }}
       >
-        <h1 style={{ color: "red", margin: 0 }}>Welcome to Dummy News</h1>
-        <p style={{ color: "white", marginTop: "1rem" }}>The only news you need...</p>
+        <h1>Welcome to Dummy News</h1>
+        <p>The only news you need...</p>
       </div>
-    </Box>
+    </div>
   );
 };
 

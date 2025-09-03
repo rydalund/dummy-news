@@ -6,13 +6,10 @@ const HeroVideo = () => {
       muted
       playsInline
       style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         objectFit: "cover",
-        zIndex: 0,
+        display: "block",
       }}
     >
       <source src="/hero-video.mp4" type="video/mp4" />

@@ -3,6 +3,7 @@ import { Grommet, Box, Button } from "grommet";
 import { Sun, Moon } from "grommet-icons";
 import { customLightTheme, customDarkTheme } from "./components/theme";
 import WelcomeScreen from "./pages/WelcomeScreen";
+import HomePage from "./pages/HomePage";
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
           primary
         />
       </Box>
+      <HomePage />
     </Grommet>
   );
 }
