@@ -1,29 +1,87 @@
-import { useEffect } from 'react';
-import ArticleGrid from '../components/ArticleGrid';
-import useArticleStore from '../store/useArticleStore';
-import axios from 'axios';
+import { useEffect, useState, useCallback } from "react";
+import ArticleGrid from "../components/ArticleGrid";
+import useArticleStore from "../store/useArticleStore";
+import axios from "axios";
+
+import { ARTICLE_FETCH_SIZE, API_URL } from "../components/config";
 
 const HomePage = () => {
-  const { apiArticles, setApiArticles, userArticles, loadUserArticles } = useArticleStore();
+  const {
+    apiArticles,
+    setApiArticles,
+    addApiArticles,
+    userArticles,
+    loadUserArticles,
+  } = useArticleStore();
+
+  const [articlesToSkip, setArticlesToSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadUserArticles();
 
-    const fetchArticles = async () => {
+    const fetchInitialArticles = async () => {
+      setIsLoading(true);
+
       try {
-        const res = await axios.get('https://dummyjson.com/posts');
-        setApiArticles(res.data.posts);
+        const res = await axios.get(
+          `${API_URL}?limit=${ARTICLE_FETCH_SIZE}&articlesToSkip=0`
+        );
+        const newArticles = res.data.posts;
+
+        setApiArticles(newArticles);
+        setArticlesToSkip(ARTICLE_FETCH_SIZE);
+
+        if (ARTICLE_FETCH_SIZE >= res.data.total) {
+          setHasMore(false);
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching initial articles:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchArticles();
+    fetchInitialArticles();
   }, [loadUserArticles, setApiArticles]);
+
+  // Infinite scroll
+   const fetchMoreArticles = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+
+    try {
+      const res = await axios.get(
+        `${API_URL}?limit=${ARTICLE_FETCH_SIZE}&skip=${articlesToSkip}`
+      );
+      const newArticles = res.data.posts;
+
+      addApiArticles(newArticles);
+      const newSkip = articlesToSkip + ARTICLE_FETCH_SIZE;
+      setArticlesToSkip(newSkip);
+
+      if (newSkip >= res.data.total) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Error fetching more articles:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, hasMore, articlesToSkip, addApiArticles]);
 
   const allArticles = [...apiArticles, ...userArticles];
 
-  return <ArticleGrid articles={allArticles} />;
+  return (
+    <ArticleGrid
+      articles={allArticles}
+      fetchMore={fetchMoreArticles}
+      hasMore={hasMore}
+      isLoading={isLoading}
+    />
+  );
 };
 
 export default HomePage;

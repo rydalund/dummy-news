@@ -1,19 +1,45 @@
-import { useState } from 'react';
-
-const fallbackImage = '/no-image.png';
+import { useState, useContext } from "react";
+import { Box, Text, Image, ThemeContext } from "grommet";
+import { getAiImageUrl } from "./config";
 
 const AiImage = ({ title }) => {
   const [hasError, setHasError] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(title)}`;
+  const theme = useContext(ThemeContext);
+  const styles = theme.global.articleImage;
+
+  if (hasError) return null;
+
+  const imageUrl = getAiImageUrl(title);
 
   return (
-    <img
-      src={hasError ? fallbackImage : imageUrl}
-      alt={hasError ? "No image awailable" : title}
-      onError={() => setHasError(true)}
-      style={{ width: '100%', borderRadius: '8px' }}
-    />
+    <Box
+      style={styles.container}
+      background="cardBackground"
+      round="8px"
+      overflow="hidden"
+      margin={{ bottom: "small" }}
+      align="center"
+      justify="center"
+    >
+      {!loaded && (
+        <Text style={styles.loadingText} alignSelf="center">
+          Loading image...
+        </Text>
+      )}
+      <Image
+        src={imageUrl}
+        alt={title}
+        fit="cover"
+        style={{
+          ...styles.image,
+          display: loaded ? "block" : "none",
+        }}
+        onLoad={() => setLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+    </Box>
   );
 };
 
