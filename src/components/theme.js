@@ -20,7 +20,7 @@ const baseTheme = {
     },
     articleImage: {
       container: {
-        height: "100%", // reserverad yta för bilden
+        height: "100%", // Reserved area for image
         position: "relative",
       },
       loadingText: {
@@ -61,6 +61,7 @@ const darkColors = {
       text: "#CCCCCC",
       userPanelBackgroundDark: "#3D3D3D",
       cardBackground: "#2A2A2A",
+      icon: "#666666", // So icons get same color in dark mode
     },
     elevation: {
       dark: {
