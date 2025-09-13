@@ -6,8 +6,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import HomePage from "./pages/HomePage";
 import ArticleForm from "./components/ArticleForm";
-
-
+import UserPanel from "./components/UserPanel";
 
 function App() {
   const [themeMode, setThemeMode] = useState(() => {
@@ -29,25 +28,11 @@ function App() {
     >
       <Router>
         <WelcomeScreen />
-
-        <Box pad="medium" align="center" background="background">
-          <Button
-            label={themeMode === "light" ? "Dark mode" : "Light mode"}
-            icon={themeMode === "light" ? <Moon /> : <Sun />}
-            onClick={toggleTheme}
-            primary
-          />
-        </Box>
-
-        <Box align="center" margin={{ bottom: "medium" }}>
-          <Link to="/new">
-            <Button label="Add New Article" />
-          </Link>
-        </Box>
-
+        <UserPanel themeMode={themeMode} toggleTheme={toggleTheme} />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/new" element={<ArticleForm />} />
+        {/*<Route path="/article/:id" element={<ArticleView />} />*/}
         </Routes>
       </Router>
     </Grommet>

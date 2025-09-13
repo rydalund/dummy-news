@@ -26,7 +26,7 @@ const HomePage = () => {
 
       try {
         const res = await axios.get(
-          `${API_URL}?limit=${ARTICLE_FETCH_SIZE}&articlesToSkip=0`
+          `${API_URL}?limit=${ARTICLE_FETCH_SIZE}&skip=0`
         );
         const newArticles = res.data.posts;
 
@@ -47,7 +47,7 @@ const HomePage = () => {
   }, [loadUserArticles, setApiArticles]);
 
   // Infinite scroll
-   const fetchMoreArticles = useCallback(async () => {
+  const fetchMoreArticles = useCallback(async () => {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
@@ -72,7 +72,13 @@ const HomePage = () => {
     }
   }, [isLoading, hasMore, articlesToSkip, addApiArticles]);
 
-  const allArticles = [...apiArticles, ...userArticles];
+  // Sorting user articles
+  const sortedUserArticles = userArticles
+    .slice()
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  // Puts all article together, with user articles first
+  const allArticles = [...sortedUserArticles, ...apiArticles];
 
   return (
     <ArticleGrid
