@@ -4,7 +4,7 @@ import ArticleCard from "./ArticleCard";
 
 const ArticleGrid = ({ articles, fetchMore, hasMore, isLoading }) => {
   // useRef to keep a mutable reference to the IntersectionObserver instance
-  // This allows us to persist the observer between renders without re-creating it unnecessarily
+  // This allows persisting the observer between renders without re-creating it unnecessarily
   const observer = useRef();
 
   // useCallback memoizes the function so it only changes if dependencies change
@@ -57,7 +57,7 @@ const ArticleGrid = ({ articles, fetchMore, hasMore, isLoading }) => {
         })}
       </Grid>
 
-      {/* Loading indicator while fetching more articles */}
+      {/* Loading text while fetching more articles */}
       {isLoading && (
         <p style={{ textAlign: "center", marginTop: "1rem" }}>
           Loading articles...

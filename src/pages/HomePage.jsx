@@ -12,6 +12,7 @@ const HomePage = () => {
     addApiArticles,
     userArticles,
     loadUserArticles,
+    loadFavorites, 
   } = useArticleStore();
 
   const [articlesToSkip, setArticlesToSkip] = useState(0);
@@ -20,6 +21,7 @@ const HomePage = () => {
 
   useEffect(() => {
     loadUserArticles();
+    loadFavorites();
 
     const fetchInitialArticles = async () => {
       setIsLoading(true);
@@ -44,7 +46,8 @@ const HomePage = () => {
     };
 
     fetchInitialArticles();
-  }, [loadUserArticles, setApiArticles]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Infinite scroll
   const fetchMoreArticles = useCallback(async () => {
