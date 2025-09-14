@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Grommet, Box, Button } from "grommet";
-import { Sun, Moon } from "grommet-icons";
-import { customLightTheme, customDarkTheme } from "./components/theme";
+import { customLightTheme, customDarkTheme } from "./config/theme";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import HomePage from "./pages/HomePage";
 import ArticleForm from "./components/ArticleForm";
 import UserPanel from "./components/UserPanel";
+import ArticleView from "./components/ArticleView";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function App() {
   const [themeMode, setThemeMode] = useState(() => {
@@ -32,7 +33,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/new" element={<ArticleForm />} />
-        {/*<Route path="/article/:id" element={<ArticleView />} />*/}
+          <Route path="/article/:id" element={<ArticleView />} />
+           <Route path="/favorites" element={<FavoritesPage />} />
         </Routes>
       </Router>
     </Grommet>

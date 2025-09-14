@@ -1,11 +1,10 @@
 import { useState, useContext } from "react";
 import { Box, Text, Image, ThemeContext } from "grommet";
-import { getAiImageUrl } from "./config";
+import { getAiImageUrl } from "../config/config";
 
 const AiImage = ({ title }) => {
   const [hasError, setHasError] = useState(false);
   const [loaded, setLoaded] = useState(false);
-
   const theme = useContext(ThemeContext);
   const styles = theme.global.articleImage;
 

@@ -2,8 +2,22 @@ import { useEffect, useState, useCallback } from "react";
 import ArticleGrid from "../components/ArticleGrid";
 import useArticleStore from "../store/useArticleStore";
 import axios from "axios";
+import { ARTICLE_FETCH_SIZE, API_URL } from "../config/config";
 
-import { ARTICLE_FETCH_SIZE, API_URL } from "../components/config";
+//Adding reactions on articles to simulate real ones from API
+const addRandomReactions = (articles) => {
+  return articles.map((article) => ({
+    ...article,
+    likes:
+      article.likes !== undefined
+        ? article.likes
+        : Math.floor(Math.random() * 11), // 0–10
+    dislikes:
+      article.dislikes !== undefined
+        ? article.dislikes
+        : Math.floor(Math.random() * 6), // 0–5
+  }));
+};
 
 const HomePage = () => {
   const {
@@ -13,6 +27,7 @@ const HomePage = () => {
     userArticles,
     loadUserArticles,
     loadFavorites, 
+    loadReactions,
   } = useArticleStore();
 
   const [articlesToSkip, setArticlesToSkip] = useState(0);
@@ -22,6 +37,7 @@ const HomePage = () => {
   useEffect(() => {
     loadUserArticles();
     loadFavorites();
+    loadReactions();
 
     const fetchInitialArticles = async () => {
       setIsLoading(true);
@@ -81,8 +97,11 @@ const HomePage = () => {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   // Puts all article together, with user articles first
-  const allArticles = [...sortedUserArticles, ...apiArticles];
-
+  // Combine and add random reactions
+const allArticles = addRandomReactions([
+  ...sortedUserArticles,
+  ...apiArticles,
+]);
   return (
     <ArticleGrid
       articles={allArticles}

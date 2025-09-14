@@ -1,19 +1,28 @@
 import { Box, Button } from "grommet";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Nav = () => {
   return (
-    <Box
-      direction="row"
-      align="center"
-      gap="medium" // mindre avstånd
-    >
-      <Link to="/">
+    <Box direction="row" align="center" gap="medium">
+      <NavLink
+        to="/"
+        style={({ isActive }) => ({
+          textDecoration: "none",
+          opacity: isActive ? 1 : 0.5,
+        })}
+      >
         <Button label="Home" />
-      </Link>
-      <Link to="/new">
+      </NavLink>
+
+      <NavLink
+        to="/new"
+        style={({ isActive }) => ({
+          textDecoration: "none",
+          opacity: isActive ? 1 : 0.5,
+        })}
+      >
         <Button label="Add New Article" />
-      </Link>
+      </NavLink>
     </Box>
   );
 };
