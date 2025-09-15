@@ -2,6 +2,7 @@ import { Box, Heading, Paragraph, Button } from "grommet";
 import { Link, useLocation } from "react-router-dom";
 import AiImage from "./AiImage";
 import useArticleStore from "../store/useArticleStore";
+import { showSuccess } from "./toastMessages";
 
 const ArticleCard = ({ article, onBack = null }) => {
   const {
@@ -11,6 +12,7 @@ const ArticleCard = ({ article, onBack = null }) => {
     incrementDislike,
     getLikes,
     getDislikes,
+    deleteUserArticle,
   } = useArticleStore();
 
   const location = useLocation();
@@ -18,6 +20,13 @@ const ArticleCard = ({ article, onBack = null }) => {
 
   // Bool for checking if we are on ArticleView, this will later be used if to remove the link on card
   const isInArticleView = location.pathname === `/article/${id}`;
+
+  const handleDelete = () => {
+    if (article.isUserCreated) {
+      deleteUserArticle(id);
+      showSuccess("Article was deleted");
+    } //else { }
+  };
 
   // Separate content for wrapping with link - or not
   const content = (
@@ -100,7 +109,12 @@ const ArticleCard = ({ article, onBack = null }) => {
           <span style={{ fontSize: "1.2em" }}>{getDislikes(id)}</span>
         </Box>
         <Box direction="row" gap="medium">
-          <Button plain label="🚫" style={{ fontSize: "1.4em" }} />
+          <Button
+            plain
+            label="🚫"
+            onClick={handleDelete}
+            style={{ fontSize: "1.4em" }}
+          />
           <Button
             plain
             onClick={() => toggleFavorite(id)}
@@ -111,7 +125,7 @@ const ArticleCard = ({ article, onBack = null }) => {
       </Box>
       {isInArticleView && onBack && (
         <Button
-          label="← Tillbaka"
+          label="← Go back"
           onClick={onBack}
           margin={{ bottom: "small", top: "medium" }}
         />

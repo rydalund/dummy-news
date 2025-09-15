@@ -4,21 +4,6 @@ import useArticleStore from "../store/useArticleStore";
 import axios from "axios";
 import { ARTICLE_FETCH_SIZE, API_URL } from "../config/config";
 
-//Adding reactions on articles to simulate real ones from API
-const addRandomReactions = (articles) => {
-  return articles.map((article) => ({
-    ...article,
-    likes:
-      article.likes !== undefined
-        ? article.likes
-        : Math.floor(Math.random() * 11), // 0–10
-    dislikes:
-      article.dislikes !== undefined
-        ? article.dislikes
-        : Math.floor(Math.random() * 6), // 0–5
-  }));
-};
-
 const HomePage = () => {
   const {
     apiArticles,
@@ -26,8 +11,9 @@ const HomePage = () => {
     addApiArticles,
     userArticles,
     loadUserArticles,
-    loadFavorites, 
+    loadFavorites,
     loadReactions,
+    isApiArticleHidden,
   } = useArticleStore();
 
   const [articlesToSkip, setArticlesToSkip] = useState(0);
@@ -62,7 +48,7 @@ const HomePage = () => {
     };
 
     fetchInitialArticles();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Infinite scroll
@@ -96,12 +82,14 @@ const HomePage = () => {
     .slice()
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+  // Filter out hidden API articles
+  const visibleApiArticles = apiArticles.filter(
+    (article) => !isApiArticleHidden(article.id)
+  );
+
   // Puts all article together, with user articles first
-  // Combine and add random reactions
-const allArticles = addRandomReactions([
-  ...sortedUserArticles,
-  ...apiArticles,
-]);
+  const allArticles = [...sortedUserArticles, ...visibleApiArticles ];
+
   return (
     <ArticleGrid
       articles={allArticles}

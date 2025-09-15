@@ -8,6 +8,8 @@ import ArticleForm from "./components/ArticleForm";
 import UserPanel from "./components/UserPanel";
 import ArticleView from "./components/ArticleView";
 import FavoritesPage from "./pages/FavoritesPage";
+import Toast from "./components/Toast";
+
 
 function App() {
   const [themeMode, setThemeMode] = useState(() => {
@@ -27,6 +29,7 @@ function App() {
       theme={themeMode === "light" ? customLightTheme : customDarkTheme}
       full
     >
+      <Toast />
       <Router>
         <WelcomeScreen />
         <UserPanel themeMode={themeMode} toggleTheme={toggleTheme} />

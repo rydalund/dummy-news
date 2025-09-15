@@ -7,6 +7,8 @@ const useArticleStore = create((set, get) => ({
   favorites: [],
   likes: [],
   dislikes: [],
+  hiddenApiArticles: [],
+  
 
   setApiArticles: (articles) => set({ apiArticles: articles }),
 
@@ -21,13 +23,22 @@ const useArticleStore = create((set, get) => ({
     set({ userArticles: parsed });
   },
 
-  addUserArticle: (article) => {
+  /*addUserArticle: (article) => {
     set((state) => {
       const updated = [...state.userArticles, article];
       localStorage.setItem("userArticles", JSON.stringify(updated));
       return { userArticles: updated };
     });
-  },
+  },*/
+
+  addUserArticle: (article) => {
+  const articleWithFlag = { ...article, isUserCreated: true };
+  set((state) => {
+    const updated = [...state.userArticles, articleWithFlag];
+    localStorage.setItem("userArticles", JSON.stringify(updated));
+    return { userArticles: updated };
+  });
+},
 
   deleteUserArticle: (id) => {
     set((state) => {
@@ -109,6 +120,24 @@ const useArticleStore = create((set, get) => ({
     const dislikes = savedDislikes ? JSON.parse(savedDislikes) : {};
     set({ likes, dislikes });
   },
+
+  hideApiArticle: (id) => {
+  set((state) => {
+    const updated = [...state.hiddenApiArticles, id];
+    localStorage.setItem("hiddenApiArticles", JSON.stringify(updated));
+    return { hiddenApiArticles: updated };
+  });
+},
+
+loadHiddenApiArticles: () => {
+  const saved = localStorage.getItem("hiddenApiArticles");
+  const parsed = saved ? JSON.parse(saved) : [];
+  set({ hiddenApiArticles: parsed });
+},
+isApiArticleHidden: (id) => {
+  return get().hiddenApiArticles.includes(id);
+}
+
 }));
 
 export default useArticleStore;
