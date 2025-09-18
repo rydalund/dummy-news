@@ -13,7 +13,7 @@ import {
 import { Trash } from "grommet-icons";
 import { v4 as uuidv4 } from "uuid";
 import useArticleStore from "../store/useArticleStore";
-import { getAiImageUrl } from "../configs/config";
+import { getAiImageUrl, NO_AUTH_USER_ID} from "../configs/config";
 
 const ArticleForm = () => {
   const navigate = useNavigate();
@@ -59,6 +59,7 @@ const ArticleForm = () => {
       body: trimmedBody,
       imageUrl,
       createdAt: new Date().toISOString(),
+      userId: NO_AUTH_USER_ID,
     };
 
     addUserArticle(newArticle);

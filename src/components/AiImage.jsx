@@ -14,7 +14,11 @@ const AiImage = ({ title }) => {
 
   return (
     <Box
-      style={styles.container}
+      style={{
+        ...styles.container,
+        aspectRatio: "1 / 1",
+        width: "100%",
+      }}
       background="cardBackground"
       round="8px"
       overflow="hidden"

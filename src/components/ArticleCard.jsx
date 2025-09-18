@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import AiImage from "./AiImage";
 import useArticleStore from "../store/useArticleStore";
 import { showSuccess, showCustomToast } from "../configs/toastConfig";
+import useUserMap from "../hooks/useUserMap";
 //import { toast } from "react-toastify";
 
 const ArticleCard = ({ article, onBack = null }) => {
@@ -14,28 +15,33 @@ const ArticleCard = ({ article, onBack = null }) => {
     getLikes,
     getDislikes,
     //deleteUserArticle,
-     hideApiArticle,
+    hideApiArticle,
   } = useArticleStore();
 
-  const location = useLocation();
+  const userMap = useUserMap();
   const id = article.id;
 
+  const location = useLocation();
   // Bool for checking if we are on ArticleView, this will later be used if to remove the link on card
   const isInArticleView = location.pathname === `/article/${id}`;
 
   const handleDelete = () => {
-  showCustomToast(({ closeToast }) => (
-     <Box pad="small" gap="small">
-      <p>Do you really want to delete this article? (You can't undo it...)</p>
-      <button onClick={() => {
-         hideApiArticle(id);
-        closeToast();
-        showSuccess("Article was deleted");
-      }}>Yes, delete</button>
-      <button onClick={() => closeToast()}>No, abort</button>
-    </Box>
-  ));
-};
+    showCustomToast(({ closeToast }) => (
+      <Box pad="small" gap="small">
+        <p>Do you really want to delete this article? (You can't undo it...)</p>
+        <button
+          onClick={() => {
+            hideApiArticle(id);
+            closeToast();
+            showSuccess("Article was deleted");
+          }}
+        >
+          Yes, delete
+        </button>
+        <button onClick={() => closeToast()}>No, abort</button>
+      </Box>
+    ));
+  };
 
   // Separate content for wrapping with link - or not
   const content = (
@@ -73,6 +79,17 @@ const ArticleCard = ({ article, onBack = null }) => {
       >
         {article.body}
       </Paragraph>
+      {isInArticleView && (
+        <Box align="end" margin={{ right: "medium" }}>
+          <Paragraph
+            size="small"
+            color="inherit"
+            style={{ fontStyle: "italic" }}
+          >
+            Written by: {userMap[article.userId] || `User #${article.userId}`}
+          </Paragraph>
+        </Box>
+      )}
     </Box>
   );
   return (

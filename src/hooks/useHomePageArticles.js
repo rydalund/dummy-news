@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import useArticleStore from "../store/useArticleStore";
 import { ARTICLE_FETCH_SIZE, API_URL } from "../configs/config";
+import useUserMap from "./useUserMap"; 
 
 const useHomePageArticles = () => {
   const {
@@ -19,6 +20,7 @@ const useHomePageArticles = () => {
   const [articlesToSkip, setArticlesToSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const userMap = useUserMap();
 
   useEffect(() => {
     loadUserArticles();
@@ -88,6 +90,7 @@ const useHomePageArticles = () => {
     fetchMoreArticles,
     hasMore,
     isLoading,
+    userMap,
   };
 };
 
