@@ -1,21 +1,6 @@
 import { create } from "zustand";
-
-function extractReactions(articles, existingLikes = {}, existingDislikes = {}) {
-  const likes = { ...existingLikes };
-  const dislikes = { ...existingDislikes };
-
-  articles.forEach((article) => {
-    const id = article.id;
-    if (likes[id] === undefined) {
-      likes[id] = article.reactions?.likes ?? 0;
-    }
-    if (dislikes[id] === undefined) {
-      dislikes[id] = article.reactions?.dislikes ?? 0;
-    }
-  });
-
-  return { likes, dislikes };
-}
+import { extractReactions, removeHiddenOrDeletedFavorites } from "../utils/articleUtils";
+import { saveToStorage, loadFromStorage } from "../utils/storageUtils";
 
 const useArticleStore = create((set, get) => ({
   // State
@@ -25,62 +10,60 @@ const useArticleStore = create((set, get) => ({
   likes: [],
   dislikes: [],
   hiddenApiArticles: [],
-  
+
   setApiArticles: (articles) => {
     const existingLikes = get().likes;
     const existingDislikes = get().dislikes;
-    const { likes, dislikes } = extractReactions(
-      articles,
-      existingLikes,
-      existingDislikes
-    );
-    localStorage.setItem("likes", JSON.stringify(likes));
-    localStorage.setItem("dislikes", JSON.stringify(dislikes));
+    const { likes, dislikes } = extractReactions(articles, existingLikes, existingDislikes);
+
+    saveToStorage("likes", likes);
+    saveToStorage("dislikes", dislikes);
+
     set({ apiArticles: articles, likes, dislikes });
   },
 
   addApiArticles: (newArticles) => {
     set((state) => {
-      const { likes, dislikes } = extractReactions(
-        newArticles,
-        state.likes,
-        state.dislikes
-      );
+      const { likes, dislikes } = extractReactions(newArticles, state.likes, state.dislikes);
       const combinedArticles = [...state.apiArticles, ...newArticles];
-      localStorage.setItem("likes", JSON.stringify(likes));
-      localStorage.setItem("dislikes", JSON.stringify(dislikes));
+
+      saveToStorage("likes", likes);
+      saveToStorage("dislikes", dislikes);
+
       return { apiArticles: combinedArticles, likes, dislikes };
     });
   },
 
   loadUserArticles: () => {
-    const saved = localStorage.getItem("userArticles");
-    const parsed = saved ? JSON.parse(saved) : [];
+    const parsed = loadFromStorage("userArticles", []);
     set({ userArticles: parsed });
   },
 
   addUserArticle: (article) => {
     set((state) => {
       const updated = [...state.userArticles, article];
-      localStorage.setItem("userArticles", JSON.stringify(updated));
+      saveToStorage("userArticles", updated);
       return { userArticles: updated };
     });
   },
 
-  /*addUserArticle: (article) => {
-  const articleWithFlag = { ...article, isUserCreated: true };
-  set((state) => {
-    const updated = [...state.userArticles, articleWithFlag];
-    localStorage.setItem("userArticles", JSON.stringify(updated));
-    return { userArticles: updated };
-  });
-},*/
-
   deleteUserArticle: (id) => {
     set((state) => {
       const updated = state.userArticles.filter((a) => a.id !== id);
-      localStorage.setItem("userArticles", JSON.stringify(updated));
-      return { userArticles: updated };
+      const updatedFavorites = removeHiddenOrDeletedFavorites(
+        state.favorites,
+        updated,
+        state.apiArticles,
+        state.hiddenApiArticles
+      );
+
+      saveToStorage("userArticles", updated);
+      saveToStorage("favorites", updatedFavorites);
+
+      return {
+        userArticles: updated,
+        favorites: updatedFavorites,
+      };
     });
   },
 
@@ -91,7 +74,7 @@ const useArticleStore = create((set, get) => ({
         ? state.favorites.filter((favoriteId) => favoriteId !== id)
         : [...state.favorites, id];
 
-      localStorage.setItem("favorites", JSON.stringify(updated));
+      saveToStorage("favorites", updated);
       return { favorites: updated };
     });
   },
@@ -101,32 +84,25 @@ const useArticleStore = create((set, get) => ({
   },
 
   loadFavorites: () => {
-    const saved = localStorage.getItem("favorites");
-    const parsed = saved ? JSON.parse(saved) : [];
-    set({ favorites: parsed });
+    const previousFavorites = loadFromStorage("favorites", []);
+    const { userArticles, apiArticles, hiddenApiArticles } = get();
+
+    const cleaned = removeHiddenOrDeletedFavorites(
+      previousFavorites,
+      userArticles,
+      apiArticles,
+      hiddenApiArticles
+    );
+
+    set({ favorites: cleaned });
   },
-
-  /*toggleLike: (id) => {
-    set((state) => {
-      const alreadyLiked = state.likes.includes(id);
-      const newLikes = alreadyLiked
-        ? state.likes.filter((likeId) => likeId !== id)
-        : [...state.likes, id];
-      const newDislikes = state.dislikes.filter((dislikeId) => dislikeId !== id);
-
-      localStorage.setItem("likes", JSON.stringify(newLikes));
-      localStorage.setItem("dislikes", JSON.stringify(newDislikes));
-
-      return { likes: newLikes, dislikes: newDislikes };
-    });
-  },*/
 
   //For test, should be a better logic and use with API
   incrementLike: (id) => {
     set((state) => {
       const newLikes = { ...state.likes };
       newLikes[id] = (newLikes[id] || 0) + 1;
-      localStorage.setItem("likes", JSON.stringify(newLikes));
+      saveToStorage("likes", newLikes);
       return { likes: newLikes };
     });
   },
@@ -136,7 +112,7 @@ const useArticleStore = create((set, get) => ({
     set((state) => {
       const newDislikes = { ...state.dislikes };
       newDislikes[id] = (newDislikes[id] || 0) + 1;
-      localStorage.setItem("dislikes", JSON.stringify(newDislikes));
+      saveToStorage("dislikes", newDislikes);
       return { dislikes: newDislikes };
     });
   },
@@ -150,26 +126,36 @@ const useArticleStore = create((set, get) => ({
   },
 
   loadReactions: () => {
-    const savedLikes = localStorage.getItem("likes");
-    const savedDislikes = localStorage.getItem("dislikes");
-    const likes = savedLikes ? JSON.parse(savedLikes) : {};
-    const dislikes = savedDislikes ? JSON.parse(savedDislikes) : {};
+    const likes = loadFromStorage("likes", {});
+    const dislikes = loadFromStorage("dislikes", {});
     set({ likes, dislikes });
   },
 
   hideApiArticle: (id) => {
     set((state) => {
-      const updated = [...state.hiddenApiArticles, id];
-      localStorage.setItem("hiddenApiArticles", JSON.stringify(updated));
-      return { hiddenApiArticles: updated };
+      const updatedHidden = [...state.hiddenApiArticles, id];
+      const updatedFavorites = removeHiddenOrDeletedFavorites(
+        state.favorites,
+        state.userArticles,
+        state.apiArticles,
+        updatedHidden
+      );
+
+      saveToStorage("hiddenApiArticles", updatedHidden);
+      saveToStorage("favorites", updatedFavorites);
+
+      return {
+        hiddenApiArticles: updatedHidden,
+        favorites: updatedFavorites,
+      };
     });
   },
 
   loadHiddenApiArticles: () => {
-    const saved = localStorage.getItem("hiddenApiArticles");
-    const parsed = saved ? JSON.parse(saved) : [];
+    const parsed = loadFromStorage("hiddenApiArticles", []);
     set({ hiddenApiArticles: parsed });
   },
+
   isApiArticleHidden: (id) => {
     return get().hiddenApiArticles.includes(id);
   },

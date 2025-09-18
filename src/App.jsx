@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Grommet, Box, Button } from "grommet";
-import { customLightTheme, customDarkTheme } from "./config/theme";
+import { customLightTheme, customDarkTheme } from "./configs/theme";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import HomePage from "./pages/HomePage";

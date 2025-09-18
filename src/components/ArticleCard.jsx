@@ -2,7 +2,7 @@ import { Box, Heading, Paragraph, Button } from "grommet";
 import { Link, useLocation } from "react-router-dom";
 import AiImage from "./AiImage";
 import useArticleStore from "../store/useArticleStore";
-import { showSuccess, showCustomToast } from "../config/toastConfig";
+import { showSuccess, showCustomToast } from "../configs/toastConfig";
 //import { toast } from "react-toastify";
 
 const ArticleCard = ({ article, onBack = null }) => {
@@ -13,7 +13,8 @@ const ArticleCard = ({ article, onBack = null }) => {
     incrementDislike,
     getLikes,
     getDislikes,
-    deleteUserArticle,
+    //deleteUserArticle,
+     hideApiArticle,
   } = useArticleStore();
 
   const location = useLocation();
@@ -27,7 +28,7 @@ const ArticleCard = ({ article, onBack = null }) => {
      <Box pad="small" gap="small">
       <p>Do you really want to delete this article? (You can't undo it...)</p>
       <button onClick={() => {
-        deleteUserArticle(id);
+         hideApiArticle(id);
         closeToast();
         showSuccess("Article was deleted");
       }}>Yes, delete</button>
@@ -126,7 +127,7 @@ const ArticleCard = ({ article, onBack = null }) => {
           <Button
             plain
             onClick={() => toggleFavorite(id)}
-            label={isFavorite(id) ? "❤️" : "🩶"}
+            label={isFavorite(id) ? "❤️" : "🤍"}
             style={{ fontSize: "1.5em" }}
           />
         </Box>

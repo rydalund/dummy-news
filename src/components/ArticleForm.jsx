@@ -13,7 +13,7 @@ import {
 import { Trash } from "grommet-icons";
 import { v4 as uuidv4 } from "uuid";
 import useArticleStore from "../store/useArticleStore";
-import { getAiImageUrl } from "../config/config";
+import { getAiImageUrl } from "../configs/config";
 
 const ArticleForm = () => {
   const navigate = useNavigate();
