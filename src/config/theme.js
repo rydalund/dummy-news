@@ -89,3 +89,7 @@ export const customDarkTheme = deepMerge(
   grommet,
   deepMerge(baseTheme, darkColors)
 );
+
+export const customToastTheme = {
+  customsBackground: "rgb(111, 255, 176)",
+};

@@ -2,7 +2,8 @@ import { Box, Heading, Paragraph, Button } from "grommet";
 import { Link, useLocation } from "react-router-dom";
 import AiImage from "./AiImage";
 import useArticleStore from "../store/useArticleStore";
-import { showSuccess } from "./toastMessages";
+import { showSuccess, showCustomToast } from "../config/toastConfig";
+//import { toast } from "react-toastify";
 
 const ArticleCard = ({ article, onBack = null }) => {
   const {
@@ -22,11 +23,18 @@ const ArticleCard = ({ article, onBack = null }) => {
   const isInArticleView = location.pathname === `/article/${id}`;
 
   const handleDelete = () => {
-    if (article.isUserCreated) {
-      deleteUserArticle(id);
-      showSuccess("Article was deleted");
-    } //else { }
-  };
+  showCustomToast(({ closeToast }) => (
+     <Box pad="small" gap="small">
+      <p>Do you really want to delete this article? (You can't undo it...)</p>
+      <button onClick={() => {
+        deleteUserArticle(id);
+        closeToast();
+        showSuccess("Article was deleted");
+      }}>Yes, delete</button>
+      <button onClick={() => closeToast()}>No, abort</button>
+    </Box>
+  ));
+};
 
   // Separate content for wrapping with link - or not
   const content = (

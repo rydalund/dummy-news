@@ -1,5 +1,22 @@
 import { create } from "zustand";
 
+function extractReactions(articles, existingLikes = {}, existingDislikes = {}) {
+  const likes = { ...existingLikes };
+  const dislikes = { ...existingDislikes };
+
+  articles.forEach((article) => {
+    const id = article.id;
+    if (likes[id] === undefined) {
+      likes[id] = article.reactions?.likes ?? 0;
+    }
+    if (dislikes[id] === undefined) {
+      dislikes[id] = article.reactions?.dislikes ?? 0;
+    }
+  });
+
+  return { likes, dislikes };
+}
+
 const useArticleStore = create((set, get) => ({
   // State
   apiArticles: [],
@@ -9,13 +26,32 @@ const useArticleStore = create((set, get) => ({
   dislikes: [],
   hiddenApiArticles: [],
   
+  setApiArticles: (articles) => {
+    const existingLikes = get().likes;
+    const existingDislikes = get().dislikes;
+    const { likes, dislikes } = extractReactions(
+      articles,
+      existingLikes,
+      existingDislikes
+    );
+    localStorage.setItem("likes", JSON.stringify(likes));
+    localStorage.setItem("dislikes", JSON.stringify(dislikes));
+    set({ apiArticles: articles, likes, dislikes });
+  },
 
-  setApiArticles: (articles) => set({ apiArticles: articles }),
-
-  addApiArticles: (newArticles) =>
-    set((state) => ({
-      apiArticles: [...state.apiArticles, ...newArticles],
-    })),
+  addApiArticles: (newArticles) => {
+    set((state) => {
+      const { likes, dislikes } = extractReactions(
+        newArticles,
+        state.likes,
+        state.dislikes
+      );
+      const combinedArticles = [...state.apiArticles, ...newArticles];
+      localStorage.setItem("likes", JSON.stringify(likes));
+      localStorage.setItem("dislikes", JSON.stringify(dislikes));
+      return { apiArticles: combinedArticles, likes, dislikes };
+    });
+  },
 
   loadUserArticles: () => {
     const saved = localStorage.getItem("userArticles");
@@ -23,22 +59,22 @@ const useArticleStore = create((set, get) => ({
     set({ userArticles: parsed });
   },
 
-  /*addUserArticle: (article) => {
+  addUserArticle: (article) => {
     set((state) => {
       const updated = [...state.userArticles, article];
       localStorage.setItem("userArticles", JSON.stringify(updated));
       return { userArticles: updated };
     });
-  },*/
+  },
 
-  addUserArticle: (article) => {
+  /*addUserArticle: (article) => {
   const articleWithFlag = { ...article, isUserCreated: true };
   set((state) => {
     const updated = [...state.userArticles, articleWithFlag];
     localStorage.setItem("userArticles", JSON.stringify(updated));
     return { userArticles: updated };
   });
-},
+},*/
 
   deleteUserArticle: (id) => {
     set((state) => {
@@ -70,7 +106,7 @@ const useArticleStore = create((set, get) => ({
     set({ favorites: parsed });
   },
 
-  toggleLike: (id) => {
+  /*toggleLike: (id) => {
     set((state) => {
       const alreadyLiked = state.likes.includes(id);
       const newLikes = alreadyLiked
@@ -83,7 +119,7 @@ const useArticleStore = create((set, get) => ({
 
       return { likes: newLikes, dislikes: newDislikes };
     });
-  },
+  },*/
 
   //For test, should be a better logic and use with API
   incrementLike: (id) => {
@@ -95,7 +131,7 @@ const useArticleStore = create((set, get) => ({
     });
   },
 
-//For test, should be a better logic and use with API
+  //For test, should be a better logic and use with API
   incrementDislike: (id) => {
     set((state) => {
       const newDislikes = { ...state.dislikes };
@@ -122,22 +158,21 @@ const useArticleStore = create((set, get) => ({
   },
 
   hideApiArticle: (id) => {
-  set((state) => {
-    const updated = [...state.hiddenApiArticles, id];
-    localStorage.setItem("hiddenApiArticles", JSON.stringify(updated));
-    return { hiddenApiArticles: updated };
-  });
-},
+    set((state) => {
+      const updated = [...state.hiddenApiArticles, id];
+      localStorage.setItem("hiddenApiArticles", JSON.stringify(updated));
+      return { hiddenApiArticles: updated };
+    });
+  },
 
-loadHiddenApiArticles: () => {
-  const saved = localStorage.getItem("hiddenApiArticles");
-  const parsed = saved ? JSON.parse(saved) : [];
-  set({ hiddenApiArticles: parsed });
-},
-isApiArticleHidden: (id) => {
-  return get().hiddenApiArticles.includes(id);
-}
-
+  loadHiddenApiArticles: () => {
+    const saved = localStorage.getItem("hiddenApiArticles");
+    const parsed = saved ? JSON.parse(saved) : [];
+    set({ hiddenApiArticles: parsed });
+  },
+  isApiArticleHidden: (id) => {
+    return get().hiddenApiArticles.includes(id);
+  },
 }));
 
 export default useArticleStore;
