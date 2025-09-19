@@ -2,7 +2,7 @@ import { useRef, useCallback } from "react";
 import { Grid } from "grommet";
 import ArticleCard from "./ArticleCard";
 
-const ArticleGrid = ({ articles, fetchMore, hasMore, isLoading, userMap }) => {
+const ArticleGrid = ({ articles, fetchMore, hasMore, isLoading }) => {
   // useRef to keep a mutable reference to the IntersectionObserver instance
   // This allows persisting the observer between renders without re-creating it unnecessarily
   const observer = useRef();
@@ -51,7 +51,7 @@ const ArticleGrid = ({ articles, fetchMore, hasMore, isLoading, userMap }) => {
               ref={isLast ? lastArticleRef : null}
               style={{ width: "100%" }}
             >
-              <ArticleCard article={article} userMap={userMap} />
+              <ArticleCard article={article} />
             </div>
           );
         })}

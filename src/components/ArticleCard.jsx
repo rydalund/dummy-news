@@ -3,8 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import AiImage from "./AiImage";
 import useArticleStore from "../store/useArticleStore";
 import { showSuccess, showCustomToast } from "../configs/toastConfig";
-import useUserMap from "../hooks/useUserMap";
-//import { toast } from "react-toastify";
+import useAuthor from "../hooks/useAuthor";
+import { NO_AUTH_USER_ID } from "../configs/config";
+
 
 const ArticleCard = ({ article, onBack = null }) => {
   const {
@@ -14,34 +15,63 @@ const ArticleCard = ({ article, onBack = null }) => {
     incrementDislike,
     getLikes,
     getDislikes,
-    //deleteUserArticle,
+    deleteUserArticle,
     hideApiArticle,
   } = useArticleStore();
 
-  const userMap = useUserMap();
   const id = article.id;
 
   const location = useLocation();
   // Bool for checking if we are on ArticleView, this will later be used if to remove the link on card
   const isInArticleView = location.pathname === `/article/${id}`;
+  const { authorName, isLoading: authorLoading } = useAuthor(article.userId);
 
-  const handleDelete = () => {
+ const handleDelete = (article) => {
+  const isUserArticle = article.userId === NO_AUTH_USER_ID;
+
+  if (isUserArticle) {
     showCustomToast(({ closeToast }) => (
       <Box pad="small" gap="small">
-        <p>Do you really want to delete this article? (You can't undo it...)</p>
+        <p>
+          Do you really want to permanently delete this article? (This action
+          cannot be undone!)
+        </p>
         <button
           onClick={() => {
-            hideApiArticle(id);
+            deleteUserArticle(article.id);
+            showSuccess("Article was permanently deleted");
             closeToast();
-            showSuccess("Article was deleted");
+            if (onBack) onBack();
           }}
         >
           Yes, delete
         </button>
-        <button onClick={() => closeToast()}>No, abort</button>
+        <button onClick={closeToast}>No, cancel</button>
       </Box>
     ));
-  };
+  } else {
+    showCustomToast(({ closeToast }) => (
+      <Box pad="small" gap="small">
+        <p>
+          You can only delete articles created via the form.
+          <br />
+          Would you like to hide this API article instead?
+        </p>
+        <button
+          onClick={() => {
+            hideApiArticle(article.id);
+            showSuccess("API article has been hidden");
+            closeToast();
+            if (onBack) onBack();
+          }}
+        >
+          Yes, hide
+        </button>
+        <button onClick={closeToast}>No, cancel</button>
+      </Box>
+    ));
+  }
+};
 
   // Separate content for wrapping with link - or not
   const content = (
@@ -79,14 +109,14 @@ const ArticleCard = ({ article, onBack = null }) => {
       >
         {article.body}
       </Paragraph>
-      {isInArticleView && (
+      {isInArticleView && authorName && !authorLoading && (
         <Box align="end" margin={{ right: "medium" }}>
           <Paragraph
             size="small"
             color="inherit"
             style={{ fontStyle: "italic" }}
           >
-            Written by: {userMap[article.userId] || `User #${article.userId}`}
+            Written by: {authorName}
           </Paragraph>
         </Box>
       )}
@@ -138,7 +168,7 @@ const ArticleCard = ({ article, onBack = null }) => {
           <Button
             plain
             label="🚫"
-            onClick={handleDelete}
+            onClick={() => handleDelete(article)}
             style={{ fontSize: "1.4em" }}
           />
           <Button

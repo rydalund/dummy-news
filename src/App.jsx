@@ -20,6 +20,7 @@ function App() {
     localStorage.setItem("themeMode", themeMode);
   }, [themeMode]);
 
+
   const toggleTheme = () => {
     setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
   };

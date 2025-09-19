@@ -68,18 +68,17 @@ const useArticleStore = create((set, get) => ({
     });
   },
 
-  toggleFavorite: (id) => {
-    set((state) => {
-      const isFavorite = state.favorites.includes(id);
-      const updated = isFavorite
-        ? state.favorites.filter((favoriteId) => favoriteId !== id)
-        : [...state.favorites, id];
+ toggleFavorite: (id) => {
+  set((state) => {
+    const isFavorite = state.favorites.includes(id);
+    const updatedFavorites = isFavorite
+      ? state.favorites.filter((favoriteId) => favoriteId !== id)
+      : [...state.favorites, id];
 
-      saveToStorage("favorites", updated);
-      return { favorites: updated };
-    });
-  },
-
+    saveToStorage("favorites", updatedFavorites);
+    return { favorites: updatedFavorites };
+  });
+},
   isFavorite: (id) => {
     return get().favorites.includes(id);
   },

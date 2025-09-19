@@ -1,13 +1,12 @@
 import ArticleGrid from "../components/ArticleGrid";
-import useHomePageArticles from "../hooks/useHomePageArticles";
+import useArticles from "../hooks/useArticles";
 
 const HomePage = () => {
-  const { articles, fetchMoreArticles, hasMore, isLoading, userMap } = useHomePageArticles();
+  const { articles, fetchMoreArticles, hasMore, isLoading, } = useArticles();
 
   return (
     <ArticleGrid
       articles={articles}
-      userMap={userMap}
       fetchMore={fetchMoreArticles}
       hasMore={hasMore}
       isLoading={isLoading}

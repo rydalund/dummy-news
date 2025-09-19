@@ -1,16 +1,28 @@
+import { useEffect } from "react";
 import { Box, Grid, Heading } from "grommet";
-import useArticleStore from "../store/useArticleStore";
-import ArticleCard from "../components/ArticleCard";
 import { Link } from "react-router-dom";
+import useArticleStore from "../store/useArticleStore";
+import useArticles from "../hooks/useArticles";
+import ArticleCard from "../components/ArticleCard";
 
 const FavoritesPage = () => {
-  const { favorites, apiArticles, userArticles } = useArticleStore();
-  const allArticles = [...userArticles, ...apiArticles];
+  const { favorites, loadFavorites, loadUserArticles } = useArticleStore();
+  const { articles, isLoading } = useArticles();
 
-  // Filter articles with both id number from api and Form uuid
-  const favoriteArticles = allArticles.filter((a) =>
-    favorites.map(String).includes(String(a.id))
-  );
+  useEffect(() => {
+    loadFavorites();
+    loadUserArticles();
+  }, [loadFavorites, loadUserArticles]);
+
+  if (isLoading) {
+    return (
+      <Box pad="medium" align="center">
+        <Heading level={2}>Loading favorites...</Heading>
+      </Box>
+    );
+  }
+
+  const favoriteArticles = articles.filter((a) => favorites.includes(a.id));
 
   return (
     <Box pad="medium">
@@ -30,6 +42,7 @@ const FavoritesPage = () => {
           Your favorites:
         </Heading>
       </Box>
+
       {favoriteArticles.length === 0 ? (
         <Box align="center" pad="medium">
           <p
@@ -38,7 +51,7 @@ const FavoritesPage = () => {
               fontSize: "36px",
             }}
           >
-            No favorites yet 💔– read all our articles{" "}
+            No favorites yet 💔 – read all our articles{" "}
             <Link to="/" style={{ color: "red", textDecoration: "underline" }}>
               here
             </Link>
@@ -52,7 +65,7 @@ const FavoritesPage = () => {
             margin={{ horizontal: "xlarge" }}
           >
             {favoriteArticles.map((article) => (
-              <ArticleCard key={String(article.id)} article={article} />
+              <ArticleCard key={article.id} article={article} />
             ))}
           </Grid>
         </Box>
