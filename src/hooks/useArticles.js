@@ -36,7 +36,7 @@ const useArticles = () => {
         if (ARTICLE_FETCH_SIZE >= res.data.total) {
           setHasMore(false);
         }
-        //Last - go get correct favorites without hidden/deleted
+        // Last - go get correct favorites without hidden/deleted
         loadFavorites();
       } catch (error) {
         console.error("Error fetching initial articles:", error);

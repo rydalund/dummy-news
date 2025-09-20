@@ -12,9 +12,12 @@ const defaultConfig = {
 };
 
 export const showSuccess = (message) => toast.success(message, defaultConfig);
-export const showError = (message) => toast.error(message, defaultConfig);
-export const showInfo = (message) => toast.info(message, defaultConfig);
-export const showWarning = (message) => toast.warn(message, defaultConfig);
+//export const showError = (message) => toast.error(message, defaultConfig);
+export const showInfo = (message) => toast.info(message, {
+  ...defaultConfig,
+  autoClose: 8000,
+});
+//export const showWarning = (message) => toast.warn(message, defaultConfig);
 
 export const showCustomToast = (content, config = {}) => {
   return toast(content, {

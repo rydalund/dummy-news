@@ -13,9 +13,10 @@ import {
 import { Trash } from "grommet-icons";
 import { v4 as uuidv4 } from "uuid";
 import useArticleStore from "../store/useArticleStore";
-import { getAiImageUrl, NO_AUTH_USER_ID} from "../configs/config";
+import { getAiImageUrl, NO_AUTH_USER_ID } from "../configs/config";
+import { showSuccess, showInfo } from "../configs/toastConfig";
 
-const ArticleForm = () => {
+const ArticleFormPage = () => {
   const navigate = useNavigate();
   const addUserArticle = useArticleStore((state) => state.addUserArticle);
 
@@ -25,6 +26,10 @@ const ArticleForm = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [imageLoading, setImageLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const handleCancel = () => {
+    navigate("/");
+  };
 
   // Trigger AI image generation on blur, so the whole title is written
   const handleTitleBlur = () => {
@@ -64,14 +69,11 @@ const ArticleForm = () => {
 
     addUserArticle(newArticle);
     navigate("/"); // Go back to home
-  };
-
-  const handleCancel = () => {
-    navigate("/");
+    showSuccess("Article created!");
   };
 
   return (
-    <Box direction="row" pad="medium" gap="large" justify="center" wrap>
+    <Box direction="row" margin={{ bottom: "large" }} pad="medium" gap="large" justify="center" wrap>
       <Box width="large">
         <Box align="center" margin={{ bottom: "large", top: "small" }}>
           <Text
@@ -167,6 +169,15 @@ const ArticleForm = () => {
                 <Button
                   icon={<Trash />} //Icon from Grommet icons
                   onClick={() => {
+                    showInfo(
+                      <>
+                        Image was deleted<br />
+                        <br />
+                        Don't want an article without image?<br />
+                        <br />
+                        Just write a new title to generate one again...
+                      </>
+                    );
                     setImageUrl("");
                     setSubmittedTitle("");
                   }}
@@ -190,4 +201,4 @@ const ArticleForm = () => {
   );
 };
 
-export default ArticleForm;
+export default ArticleFormPage;

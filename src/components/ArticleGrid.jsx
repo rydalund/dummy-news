@@ -1,6 +1,7 @@
 import { useRef, useCallback } from "react";
-import { Grid } from "grommet";
+import { Grid, Box, Text } from "grommet";
 import ArticleCard from "./ArticleCard";
+import Footer from "./Footer";
 
 const ArticleGrid = ({ articles, fetchMore, hasMore, isLoading }) => {
   // useRef to keep a mutable reference to the IntersectionObserver instance
@@ -64,11 +65,19 @@ const ArticleGrid = ({ articles, fetchMore, hasMore, isLoading }) => {
         </p>
       )}
 
-      {/* Message when no more articles to load */}
+      {/* Message when no more articles to load, and then show the Footer*/}
       {!hasMore && (
-        <p style={{ textAlign: "center", marginTop: "1rem" }}>
-          You've reached the end - no more articles to show
-        </p>
+        <>
+          <Box margin={{ top: "medium" }}>
+            <Text textAlign="center">
+              You've reached the end - no more articles to show
+            </Text>
+          </Box>
+
+          <Box margin={{ top: "large" }}>
+            <Footer />
+          </Box>
+        </>
       )}
     </>
   );

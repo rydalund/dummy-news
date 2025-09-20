@@ -25,7 +25,7 @@ const FavoritesPage = () => {
   const favoriteArticles = articles.filter((a) => favorites.includes(a.id));
 
   return (
-    <Box pad="medium">
+    <Box pad="medium" margin={{ bottom: "large" }}>
       <Box align="center" margin={{ bottom: "medium" }}>
         <Heading
           level={1}

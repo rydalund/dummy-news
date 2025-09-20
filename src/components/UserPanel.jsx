@@ -36,6 +36,7 @@ const UserPanel = ({ themeMode, toggleTheme }) => {
       justify="center"
       gap="medium"
       pad="medium"
+     margin={{ top: "medium" }}
       background="background"
     >
       {/* Nav Component */}

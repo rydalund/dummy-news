@@ -33,13 +33,12 @@ const ArticleCard = ({ article, onBack = null }) => {
     showCustomToast(({ closeToast }) => (
       <Box pad="small" gap="small">
         <p>
-          Do you really want to permanently delete this article? (This action
-          cannot be undone!)
+          Do you really want to delete this article? (it can't be undone!)
         </p>
         <button
           onClick={() => {
             deleteUserArticle(article.id);
-            showSuccess("Article was permanently deleted");
+            showSuccess("Article was deleted");
             closeToast();
             if (onBack) onBack();
           }}
@@ -55,7 +54,8 @@ const ArticleCard = ({ article, onBack = null }) => {
         <p>
           You can only delete articles created via the form.
           <br />
-          Would you like to hide this API article instead?
+          <br />
+          Would you like to hide this article instead?
         </p>
         <button
           onClick={() => {
@@ -103,6 +103,7 @@ const ArticleCard = ({ article, onBack = null }) => {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 minHeight: "5.2em",
+                maxWidth: "100%",
               }
             : { whiteSpace: "pre-wrap", maxWidth: "100%", marginInline: "1rem" }
         }

@@ -18,7 +18,7 @@ const ArticleView = () => {
   }, [article, navigate]);
 
   if (!article) {
-    // Replace url to fix problem with go back from article
+    // Replace url to fix problem with go back from article on delete
     return null;
   }
 
