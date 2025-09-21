@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Grommet, Box, Button } from "grommet";
+import { Grommet } from "grommet";
 import { customLightTheme, customDarkTheme } from "./configs/theme";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ArticleFormPage from "./pages/ArticleFormPage";
 import ArticleView from "./components/ArticleView";

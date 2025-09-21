@@ -24,6 +24,7 @@ const ArticleCard = ({ article, onBack = null }) => {
   const location = useLocation();
   // Bool for checking if we are on ArticleView, this will later be used if to remove the link on card
   const isInArticleView = location.pathname === `/article/${id}`;
+  
   const { authorName, isLoading: authorLoading } = useAuthor(article.userId);
 
  const handleDelete = (article) => {
